@@ -1,0 +1,6 @@
+{% extends "cart/layout.html" %}
+
+{% block cart_content %}
+    {% set cart_next = url_for("cart.page") %}
+    {% include "cart/cart.html" %}
+{% endblock %}
