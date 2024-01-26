@@ -1,0 +1,18 @@
+<h1>Products</h1>
+<table>
+    <tr>
+        <th>Product</th>
+        <th>Price</th>
+        <th></th>
+    </tr>
+    {% for product in products %}
+    <tr>
+        <td>{{product.title}}</td>
+        <td>{{product.amount|format_amount("USD")}}</td>
+        <td><form method="post" action="{{url_for('add_to_cart')}}"><input type="hidden" name="product_id" value="{{loop.index0}}"><button type="submit">Add to cart</button></form></td>
+    </tr>
+    {% endfor %}
+</table>
+<h1>Your cart</h1>
+{% set cart_next = "/" %}
+{% include "cart/cart.html" %}

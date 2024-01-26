@@ -1,0 +1,39 @@
+<table id="cart">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Unit Price</th>
+            <th>Quantity</th>
+            <th>Amount</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in current_cart.line_items %}
+        <tr>
+            <td>{{item.description}}</td>
+            <td>{{item.formatted_unit_amount}}</td>
+            <td>{{item.quantity}}</td>
+            <td>{{item.formatted_amount}}</td>
+            <td>
+                <form method="post" action="{{url_for('cart.update_item', item_idx=loop.index0, next=cart_next|default())}}"><input type="hidden" name="quantity" value="{{item.quantity-1}}"><button type="submit">-</button></form>
+                <form method="post" action="{{url_for('cart.update_item', item_idx=loop.index0, next=cart_next|default())}}"><input type="hidden" name="quantity" value="{{item.quantity+1}}"><button type="submit">+</button></form>
+                <form method="post" action="{{url_for('cart.remove_item', item_idx=loop.index0, next=cart_next|default())}}"><button type="submit">Remove</button></form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="3">Total</td>
+            <td>{{current_cart.formatted_total}}</td>
+            <td></td>
+        </tr>
+    </tfoot>
+</table>
+<form action="{{url_for('cart.checkout')}}" method="post">
+    <button type="submit">Checkout</button>
+</form>
+<form action="{{url_for('cart.clear', next=cart_next|default())}}" method="post">
+    <button type="submit">Clear cart</button>
+</form>

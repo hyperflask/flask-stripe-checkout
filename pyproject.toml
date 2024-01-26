@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "flask-stripe-checkout"
+version = "0.1.0"
+description = ""
+authors = ["Maxime Bouroumeau-Fuseau <maxime.bouroumeau@gmail.com>"]
+readme = "README.md"
+license = "MIT"
+repository = "https://github.com/hyperflask/flask-stripe-checkout"
+packages = [{include = "flask_stripe_checkout"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+stripe = "^8.0.0"
+flask = "^3.0.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+pytest-cov = "^4.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
