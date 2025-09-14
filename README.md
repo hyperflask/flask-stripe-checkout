@@ -67,12 +67,18 @@ Once ready, redirect to checkout:
 ```python
 @app.post('/checkout')
 def checkout():
-    return current_cart.checkout(success_url="/success")
+    return current_cart.checkout()
 ```
+
+!!! note
+    When no `success_url` argument is provided to the checkout function, the built-in success page is used
 
 Check out the [API](#API) section for all available `current_cart` methods.
 
-To process the order on successful payment, listen to the Stripe webhook event *checkout.session.completed*:
+To process the order on successful payment, either:
+
+ - listen to the Stripe webhook event *checkout.session.completed*:
+ - when using the built-in success page, listen to the special internal event *checkout.session.success* that triggers when the page is visited
 
 ```python
 from flask_stripe_checkout import webhook
@@ -157,6 +163,33 @@ def charge_succeeded(event, charge):
     # process charge
 ```
 
+### Subscriptions
+
+To facilitate selling subscriptions, a few helper functions exists.
+
+Create a subscription:
+
+```py
+from flask_stripe_checkout.subscription import subscription_checkout
+
+@app.post('/subscribe')
+def subscribe():
+    return subscription_checkout("subscription_price_id")
+```
+
+Listen for the *checkout.session.completed* webhook event to fulfill the subscription:
+
+```python
+from flask_stripe_checkout import webhook
+
+@webhook.checkout_session_completed()
+def checkout_completed(event, session):
+    customer_id = session["customer"]["id"]
+    # store customer_id for identitying the current user's subscription
+```
+
+Use `redirect_to_customer_portal(customer_id)` to redirect to the customer portal on stripe where the user can manage its subscription.
+
 ## Configuration
 
 Available configuration options:
@@ -166,6 +199,7 @@ Available configuration options:
 | STRIPE_API_KEY | | set `stripe.api_key` | |
 | STRIPE_CHECKOUT_CURRENCY | currency | default currency to use when adding items using amounts | USD |
 | STRIPE_CHECKOUT_SESSION_OPTIONS | session_options | a dict of options to use for the checkout session. See [checkout api doc](https://stripe.com/docs/api/checkout/sessions/create) | {} |
+| STRIPE_CHECKOUT_SUCCESS_REDIRECT | checkout_success_redirect | url to redirect when checkout is successful | |
 | STRIPE_WEBHOOKS_ENDPOINT | webhook_endpoint | the stripe webhook endpoint url (use `None` to disable) | /stripe-webhooks |
 | STRIPE_WEBHOOKS_ENDPOINT_SECRET | webhook_endpoint_secret | your Stripe webhook endpoint secret to validate incoming hooks | app.secret_key |
 | STRIPE_REGISTER_CART_BLUEPRINT | register_cart_blueprint | whether to register the cart blueprint | True |
